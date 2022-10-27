@@ -1,19 +1,19 @@
 import AppLoading from "expo-app-loading";
-import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
+import { NavigationContainer } from "@react-navigation/native";
+import LoggedOutNav from "./navigators/LoggedOutNav";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const [loading, setLoading] = useState(true);
     /*
-  2022-08 기준 expo-app-loading 은 더 이상 지원되지 않고 사라질 예정이라 합니다. 그래서 대체용으로 SplashScreen이란 로딩 모듈을 사용해야 합니다. 공식 문서 Usage 예시 코드를 보고 참고해주시기 바랍니다.
-  https://docs.expo.dev/versions/latest/sdk/splash-screen
+  
    const onFinish = () => setLoading(false);
     const preload = () => {
         const fontsToLoad = [Ionicons.font];
@@ -31,6 +31,8 @@ export default function App() {
     }
     */
 
+    //2022-08 기준 expo-app-loading 은 더 이상 지원되지 않고 사라질 예정이라 합니다. 그래서 대체용으로 SplashScreen이란 로딩 모듈을 사용해야 합니다. 공식 문서 Usage 예시 코드를 보고 참고해주시기 바랍니다.
+    //https://docs.expo.dev/versions/latest/sdk/splash-screen
     useEffect(() => {
         async function prepare() {
             try {
@@ -49,7 +51,7 @@ export default function App() {
                     Asset.loadAsync(image)
                 );
 
-                await Promise.all([, , , fontPromises, , , , imagePromises]);
+                await Promise.all([...fontPromises, ...imagePromises]);
             } catch (error) {
                 console.warn(error);
             } finally {
@@ -66,23 +68,19 @@ export default function App() {
         }
     }, [loading]);
 
+    onLayoutRootView();
+
     if (loading) {
-        return null;
+        return (
+            <View>
+                <Text>loading...</Text>
+            </View>
+        );
     }
 
     return (
-        <View style={styles.container} onLayout={onLayoutRootView}>
-            <Text>Helloooooo</Text>
-            <StatusBar style="auto" />
-        </View>
+        <NavigationContainer>
+            <LoggedOutNav />
+        </NavigationContainer>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-});
