@@ -2,18 +2,26 @@ import AppLoading from "expo-app-loading";
 import { useCallback, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { Text, View } from "react-native";
+import { Appearance, Text, useColorScheme, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
+import { ThemeProvider } from "styled-components/native";
+import { darkTheme, lightTheme } from "./styles";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const [loading, setLoading] = useState(true);
+    const [colorScheme, setColorScheme] = useState("light");
+    // const colorScheme = Appearance.getColorScheme(); //일회성 가져오기
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+        setColorScheme(colorScheme);
+    }); //이부분을 스테이트로 만들어서 web에서 한것처럼 ThemeProvider에 넣어서 다크모드 지원할 수 있음
+    //removeChangeListener
+
     /*
-  
    const onFinish = () => setLoading(false);
     const preload = () => {
         const fontsToLoad = [Ionicons.font];
@@ -79,8 +87,10 @@ export default function App() {
     }
 
     return (
-        <NavigationContainer>
-            <LoggedOutNav />
-        </NavigationContainer>
+        <ThemeProvider theme={colorScheme === "light" ? lightTheme : darkTheme}>
+            <NavigationContainer>
+                <LoggedOutNav />
+            </NavigationContainer>
+        </ThemeProvider>
     );
 }
