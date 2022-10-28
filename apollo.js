@@ -1,7 +1,8 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
 
+export const isLoggedInVar = makeVar(false);
 const client = new ApolloClient({
-    uri: "https://busy-parrots-join-211-59-182-118.loca.lt/graphql",
+    uri: "https://floppy-clowns-laugh-211-59-182-118.loca.lt/graphql",
     cache: new InMemoryCache(),
 });
 

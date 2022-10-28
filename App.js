@@ -9,14 +9,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./styles";
-import { ApolloProvider } from "@apollo/client";
-import client from "./apollo";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import client, { isLoggedInVar } from "./apollo";
+import LoggedInNav from "./navigators/LoggedInNav";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const [loading, setLoading] = useState(true);
     const [colorScheme, setColorScheme] = useState("light");
+    const isLoggedIn = useReactiveVar(isLoggedInVar);
     // const colorScheme = Appearance.getColorScheme(); //일회성 가져오기
     const subscription = Appearance.addChangeListener(({ colorScheme }) => {
         setColorScheme(colorScheme);
@@ -94,7 +96,7 @@ export default function App() {
                 theme={colorScheme === "light" ? lightTheme : darkTheme}
             >
                 <NavigationContainer>
-                    <LoggedOutNav />
+                    {isLoggedIn ? <LoggedInNav /> : <LoggedOutNav />}
                 </NavigationContainer>
             </ThemeProvider>
         </ApolloProvider>
