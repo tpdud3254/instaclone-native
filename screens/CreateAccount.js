@@ -21,13 +21,24 @@ export default function CreateAccount() {
     };
 
     useEffect(() => {
-        register("firstName");
-        register("lastName");
-        register("username");
-        register("email");
-        register("password");
+        register("firstName", {
+            required: true,
+        });
+        register("lastName", {
+            required: true,
+        });
+        register("username", {
+            required: true,
+        });
+        register("email", {
+            required: true,
+        });
+        register("password", {
+            required: true,
+        });
     }, [register]);
-
+    //TODOS: 유효성 검사
+    //React Native에서는 error를 가져올 때 const { formState: { errors } } = useForm();을 해야 됩니다
     return (
         <AuthLayout>
             <TextInput
@@ -77,7 +88,7 @@ export default function CreateAccount() {
             />
             <AuthButton
                 text="Create Account"
-                disabled={true}
+                disabled={false}
                 onPress={handleSubmit(onValid)}
             />
         </AuthLayout>

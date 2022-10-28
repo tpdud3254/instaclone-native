@@ -19,6 +19,8 @@ export default function LogIn() {
         register("username");
         register("password");
     }, [register]);
+    //TODOS: 유효성 검사
+    //React Native에서는 error를 가져올 때 const { formState: { errors } } = useForm();을 해야 됩니다
     return (
         <AuthLayout>
             <TextInput

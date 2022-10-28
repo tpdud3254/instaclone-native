@@ -9,6 +9,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./styles";
+import { ApolloProvider } from "@apollo/client";
+import client from "./apollo";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -87,10 +89,14 @@ export default function App() {
     }
 
     return (
-        <ThemeProvider theme={colorScheme === "light" ? lightTheme : darkTheme}>
-            <NavigationContainer>
-                <LoggedOutNav />
-            </NavigationContainer>
-        </ThemeProvider>
+        <ApolloProvider client={client}>
+            <ThemeProvider
+                theme={colorScheme === "light" ? lightTheme : darkTheme}
+            >
+                <NavigationContainer>
+                    <LoggedOutNav />
+                </NavigationContainer>
+            </ThemeProvider>
+        </ApolloProvider>
     );
 }
