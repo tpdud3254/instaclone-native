@@ -7,6 +7,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setContext } from "@apollo/client/link/context";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
 
 export const isLoggedInVar = makeVar(false);
 export const tokenVar = makeVar("");
@@ -46,17 +47,28 @@ const authLink = setContext((_, { headers }) => {
     };
 });
 
-const client = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache({
-        typePolicies: {
-            Query: {
-                fields: {
-                    seeFeed: offsetLimitPagination(),
-                },
+export const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                seeFeed: offsetLimitPagination(),
             },
         },
-    }),
+    },
+});
+
+const persistintCache = async () => {
+    await persistCache({
+        cache,
+        storage: new AsyncStorageWrapper(AsyncStorage),
+    }); //서버가 다운되어있어도 캐시에 있는 데이터들은 보여줌
+};
+
+persistintCache();
+
+const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache,
 });
 
 export default client;

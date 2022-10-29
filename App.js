@@ -3,7 +3,13 @@ import AppLoading from "expo-app-loading";
 import { useCallback, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { Appearance, Text, useColorScheme, View } from "react-native";
+import {
+    ActivityIndicator,
+    Appearance,
+    Text,
+    useColorScheme,
+    View,
+} from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,8 +17,9 @@ import LoggedOutNav from "./navigators/LoggedOutNav";
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./styles";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import client, { isLoggedInVar, tokenVar } from "./apollo";
+import client, { isLoggedInVar, tokenVar, cache } from "./apollo";
 import LoggedInNav from "./navigators/LoggedInNav";
+import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -91,6 +98,7 @@ export default function App() {
     }, [loading]);
 
     onLayoutRootView();
+
     return (
         <ApolloProvider client={client}>
             <ThemeProvider
