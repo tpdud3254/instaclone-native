@@ -4,11 +4,54 @@ import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInput } from "../components/auth/AuthCommon";
 import { useForm } from "react-hook-form";
+import { gql, useMutation } from "@apollo/client";
+import { nav } from "../constant";
 
-export default function CreateAccount() {
-    const { register, handleSubmit, setValue } = useForm();
+const CREATE_ACOUNNT_MUTATION = gql`
+    mutation createAccount(
+        $firstName: String!
+        $lastName: String
+        $userName: String!
+        $email: String!
+        $password: String!
+    ) {
+        createAccount(
+            firstName: $firstName
+            lastName: $lastName
+            userName: $userName
+            email: $email
+            password: $password
+        ) {
+            ok
+            error
+        }
+    }
+`;
+
+export default function CreateAccount({ navigation }) {
+    const { register, handleSubmit, setValue, getValues } = useForm();
+    const onCompleted = (data) => {
+        const {
+            createAccount: { ok },
+        } = data;
+
+        const { userName, password } = getValues();
+        if (ok) {
+            navigation.navigate(nav.LogIn, {
+                userName,
+                password,
+            });
+        }
+    };
+    const [createAccountMutation, { loading }] = useMutation(
+        CREATE_ACOUNNT_MUTATION,
+        {
+            onCompleted,
+        }
+    );
+
     const lastNameRef = useRef();
-    const usernameRef = useRef();
+    const userNameRef = useRef();
     const emailRef = useRef();
     const passwordRef = useRef();
 
@@ -17,7 +60,14 @@ export default function CreateAccount() {
     };
 
     const onValid = (data) => {
-        console.log(data);
+        if (!loading) {
+            console.log(data);
+            createAccountMutation({
+                variables: {
+                    ...data,
+                },
+            });
+        }
     };
 
     useEffect(() => {
@@ -27,7 +77,7 @@ export default function CreateAccount() {
         register("lastName", {
             required: true,
         });
-        register("username", {
+        register("userName", {
             required: true,
         });
         register("email", {
@@ -54,17 +104,17 @@ export default function CreateAccount() {
                 placeholder="Last Name"
                 placeholderTextColor={"rgba(255,255,255, 0.6)"}
                 returnKeyType="next"
-                onSubmitEditing={() => onNext(usernameRef)}
+                onSubmitEditing={() => onNext(userNameRef)}
                 onChangeText={(text) => setValue("lastName", text)}
             />
             <TextInput
-                ref={usernameRef}
+                ref={userNameRef}
                 placeholder="Username"
                 placeholderTextColor={"rgba(255,255,255, 0.6)"}
                 returnKeyType="next"
                 autoCapitalize="none"
                 onSubmitEditing={() => onNext(emailRef)}
-                onChangeText={(text) => setValue("username", text)}
+                onChangeText={(text) => setValue("userName", text)}
             />
             <TextInput
                 ref={emailRef}

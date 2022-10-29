@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { isLoggedInVar } from "../apollo";
+import { isLoggedInVar, logUserIn } from "../apollo";
 import AuthButton from "../components/auth/AuthButton";
 import { TextInput } from "../components/auth/AuthCommon";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -16,16 +16,21 @@ const LOGIN_MUTATION = gql`
     }
 `;
 
-export default function LogIn() {
-    const { register, handleSubmit, setValue, watch, formState } = useForm();
+export default function LogIn({ route: { params } }) {
+    const { register, handleSubmit, setValue, watch } = useForm({
+        defaultValues: {
+            password: params?.password,
+            userName: params?.userName,
+        },
+    });
     const passwordRef = useRef();
-    const onCompleted = (data) => {
+    const onCompleted = async (data) => {
         const {
             login: { ok, token },
         } = data;
 
         if (ok) {
-            isLoggedInVar(true);
+            await logUserIn(token);
         }
     };
     const [logInMutation, { loading }] = useMutation(LOGIN_MUTATION, {
@@ -57,6 +62,7 @@ export default function LogIn() {
     return (
         <AuthLayout>
             <TextInput
+                value={watch("userName")}
                 placeholder="Username"
                 autoCapitalize="none"
                 placeholderTextColor={"rgba(255,255,255, 0.6)"}
@@ -65,6 +71,7 @@ export default function LogIn() {
                 onChangeText={(text) => setValue("userName", text)}
             />
             <TextInput
+                value={watch("password")}
                 ref={passwordRef}
                 placeholder="Password"
                 placeholderTextColor={"rgba(255,255,255, 0.6)"}

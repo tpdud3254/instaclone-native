@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppLoading from "expo-app-loading";
 import { useCallback, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,7 +11,7 @@ import LoggedOutNav from "./navigators/LoggedOutNav";
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./styles";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import client, { isLoggedInVar } from "./apollo";
+import client, { isLoggedInVar, tokenVar } from "./apollo";
 import LoggedInNav from "./navigators/LoggedInNav";
 
 SplashScreen.preventAutoHideAsync();
@@ -45,8 +46,17 @@ export default function App() {
 
     //2022-08 기준 expo-app-loading 은 더 이상 지원되지 않고 사라질 예정이라 합니다. 그래서 대체용으로 SplashScreen이란 로딩 모듈을 사용해야 합니다. 공식 문서 Usage 예시 코드를 보고 참고해주시기 바랍니다.
     //https://docs.expo.dev/versions/latest/sdk/splash-screen
+
     useEffect(() => {
         async function prepare() {
+            //token preload
+            const token = await AsyncStorage.getItem("token");
+            console.log(token);
+            if (token) {
+                isLoggedInVar(true);
+                tokenVar(token);
+            }
+
             try {
                 //font preload
                 const fontsToLoad = [Ionicons.font];
@@ -57,13 +67,13 @@ export default function App() {
                 //image preload
                 const imagesToload = [
                     require("./assets/logo.png"),
-                    "https://raw.githubusercontent.com/nomadcoders/instaclone-native/93a5b77e98eefdf5084bfae44653ba67e4ca312c/assets/logo.png",
+                    // "https://raw.githubusercontent.com/nomadcoders/instaclone-native/93a5b77e98eefdf5084bfae44653ba67e4ca312c/assets/logo.png",
                 ]; //로컬, 서버
                 const imagePromises = imagesToload.map((image) =>
                     Asset.loadAsync(image)
                 );
 
-                await Promise.all([...fontPromises, ...imagePromises]);
+                await new Promise.all([...fontPromises, ...imagePromises]);
             } catch (error) {
                 console.warn(error);
             } finally {
@@ -81,15 +91,6 @@ export default function App() {
     }, [loading]);
 
     onLayoutRootView();
-
-    if (loading) {
-        return (
-            <View>
-                <Text>loading...</Text>
-            </View>
-        );
-    }
-
     return (
         <ApolloProvider client={client}>
             <ThemeProvider
