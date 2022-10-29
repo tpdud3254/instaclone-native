@@ -9,4 +9,6 @@ export const nav = {
     Camera: "Camera",
     Me: "Me",
     Photo: "Photo",
+    Likes: "Likes",
+    Comments: "Comments",
 };

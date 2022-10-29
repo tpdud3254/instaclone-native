@@ -9,6 +9,8 @@ import Search from "../screens/Search";
 import Notifications from "../screens/Notifications";
 import Me from "../screens/Me";
 import { Image } from "react-native";
+import Likes from "../screens/Likes";
+import Comments from "../screens/Comments";
 
 const Stack = createStackNavigator();
 
@@ -66,6 +68,8 @@ export default function SharedStackNav({ screenName }) {
             ) : null}
             <Stack.Screen name={nav.Profile} component={Profile} />
             <Stack.Screen name={nav.Photo} component={Photo} />
+            <Stack.Screen name={nav.Likes} component={Likes} />
+            <Stack.Screen name={nav.Comments} component={Comments} />
         </Stack.Navigator>
     );
 }
