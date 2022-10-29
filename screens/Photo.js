@@ -1,9 +1,8 @@
 import React from "react";
-import { Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Text, TouchableOpacity, View } from "react-native";
 import { nav } from "../constant";
 
-export default function Search({ navigation }) {
+export default function Photo({ navigation }) {
     return (
         <View
             style={{
@@ -13,8 +12,8 @@ export default function Search({ navigation }) {
                 justifyContent: "center",
             }}
         >
-            <TouchableOpacity onPress={() => navigation.navigate(nav.Photo)}>
-                <Text style={{ color: "white" }}>Go to Photo</Text>
+            <TouchableOpacity onPress={() => navigation.navigate(nav.Profile)}>
+                <Text style={{ color: "white" }}>Go to Profile</Text>
             </TouchableOpacity>
         </View>
     );

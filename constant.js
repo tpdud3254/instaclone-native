@@ -7,4 +7,6 @@ export const nav = {
     Profile: "Profile",
     Search: "Search",
     Camera: "Camera",
+    Me: "Me",
+    Photo: "Photo",
 };
