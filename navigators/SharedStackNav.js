@@ -8,6 +8,7 @@ import Feed from "../screens/Feed";
 import Search from "../screens/Search";
 import Notifications from "../screens/Notifications";
 import Me from "../screens/Me";
+import { Image } from "react-native";
 
 const Stack = createStackNavigator();
 
@@ -21,21 +22,35 @@ const Stack = createStackNavigator();
                     />
                 ) : null
             )} */
-export default function StackNavFactory({ screenName }) {
+export default function SharedStackNav({ screenName }) {
     //4개의 분리된 카드 stack을 각각의 탭에 만드는 작업
     return (
         <Stack.Navigator
             screenOptions={{
+                headerMode: "screen",
                 headerBackTitleVisible: false,
                 headerTintColor: "white",
                 headerStyle: {
+                    borderBottomColor: "rgba(255, 255, 255, 0.3)",
                     shadowColor: "rgba(255, 255, 255, 0.3)",
                     backgroundColor: "black",
                 },
             }}
         >
             {screenName === nav.Feed ? (
-                <Stack.Screen name={"Tab" + nav.Feed} component={Feed} />
+                <Stack.Screen
+                    name={"Tab" + nav.Feed}
+                    component={Feed}
+                    options={{
+                        headerTitle: () => (
+                            <Image
+                                style={{ width: 120 }}
+                                resizeMode="contain"
+                                source={require("../assets/logo.png")}
+                            />
+                        ),
+                    }}
+                />
             ) : null}
             {screenName === nav.Search ? (
                 <Stack.Screen name={"Tab" + nav.Search} component={Search} />
@@ -55,6 +70,6 @@ export default function StackNavFactory({ screenName }) {
     );
 }
 
-StackNavFactory.propTypes = {
+SharedStackNav.propTypes = {
     screenName: PropTypes.string.isRequired,
 };
