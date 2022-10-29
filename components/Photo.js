@@ -29,8 +29,8 @@ const UserName = styled.Text`
 `;
 //Image 컴포넌트는 width와 height를 설정해주지 않으면 이미지가 뜨지 않음
 const File = styled.Image`
-    width: ${(props) => props.width};
-    height: ${(props) => props.height};
+    width: ${(props) => props.width + "px"};
+    height: ${(props) => props.height + "px"};
 `;
 const BottomContainer = styled.View`
     padding: 10px;
