@@ -3,4 +3,8 @@ export const nav = {
     LogIn: "LogIn",
     CreateAccount: "CreateAccount",
     Feed: "Feed",
+    Notifications: "Notifications",
+    Profile: "Profile",
+    Search: "Search",
+    Camera: "Camera",
 };
