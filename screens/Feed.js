@@ -1,7 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { FlatList } from "react-native";
-import { UserLogOut } from "../apollo";
+import { logUserOut } from "../apollo";
 import Photo from "../components/Photo";
 import ScreenLayout from "../components/ScreenLayout";
 import { nav } from "../constant";

@@ -28,7 +28,7 @@ export const logUserIn = async (token) => {
     tokenVar(token);
 };
 
-export const UserLogOut = async () => {
+export const logUserOut = async () => {
     await AsyncStorage.removeItem(TOKEN);
     isLoggedInVar(false);
     tokenVar("");
