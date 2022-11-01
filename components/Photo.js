@@ -77,7 +77,10 @@ function Photo({ id, user, caption, file, isLiked, likes }) {
     }, [file]);
 
     const goToProfile = () => {
-        navigation.navigate(nav.Profile);
+        navigation.navigate(nav.Profile, {
+            userName: user.userName,
+            id: user.id,
+        });
     };
 
     const goToComments = () => {
@@ -85,7 +88,7 @@ function Photo({ id, user, caption, file, isLiked, likes }) {
     };
 
     const goToLikes = () => {
-        navigation.navigate(nav.Likes);
+        navigation.navigate(nav.Likes, { photoId: id });
     };
 
     const updateToggleLike = (cache, result) => {
