@@ -64,7 +64,7 @@ export default function SharedStackNav({ screenName }) {
                 />
             ) : null}
             {screenName === nav.Me ? (
-                <Stack.Screen name={nav.Me} component={Me} />
+                <Stack.Screen name={"Tab" + nav.Me} component={Me} />
             ) : null}
             <Stack.Screen name={nav.Profile} component={Profile} />
             <Stack.Screen name={nav.Photo} component={Photo} />

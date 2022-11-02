@@ -6,6 +6,7 @@ import {
     TouchableWithoutFeedback,
 } from "react-native";
 import styled from "styled-components/native";
+import DismissKeyboard from "../DismissKeyboard";
 
 const Container = styled.View`
     flex: 1;
@@ -24,15 +25,8 @@ const Logo = styled.Image`
 `;
 
 export default function AuthLayout({ children }) {
-    const dismissKeyboard = () => {
-        Keyboard.dismiss();
-    };
     return (
-        <TouchableWithoutFeedback
-            onPress={dismissKeyboard}
-            style={{ flex: 1 }}
-            disabled={Platform.OS === "web"}
-        >
+        <DismissKeyboard>
             <Container>
                 <KeyboardAvoidingView
                     style={{ width: "100%" }}
@@ -48,6 +42,6 @@ source: 이미지 소스(원격 URL 또는 로컬 파일 리소스) */}
                     {children}
                 </KeyboardAvoidingView>
             </Container>
-        </TouchableWithoutFeedback>
+        </DismissKeyboard>
     );
 }

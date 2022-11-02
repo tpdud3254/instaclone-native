@@ -1,7 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import { nav } from "../constant";
+import useMe from "../hooks/useMe";
 import Feed from "../screens/Feed";
 import Me from "../screens/Me";
 import Notifications from "../screens/Notifications";
@@ -13,6 +14,7 @@ import TabIcon from "./TabIcons";
 const Tabs = createBottomTabNavigator();
 
 export default function LoggedInNav() {
+    const { data } = useMe();
     return (
         <Tabs.Navigator
             screenOptions={{
@@ -81,17 +83,32 @@ export default function LoggedInNav() {
             </Tabs.Screen>
             <Tabs.Screen
                 name={nav.Me}
-                component={Me}
                 options={{
-                    tabBarIcon: ({ focused, color, size }) => (
-                        <TabIcon
-                            iconName={"person"}
-                            size={22}
-                            focused={focused}
-                        />
-                    ),
+                    tabBarIcon: ({ focused, color, size }) =>
+                        data?.me?.avatar ? (
+                            <Image
+                                source={{ uri: data.me.avatar }}
+                                style={{
+                                    height: 20,
+                                    width: 20,
+                                    borderRadius: "50%",
+                                    ...(focused && {
+                                        borderColor: "white",
+                                        borderWidth: 1,
+                                    }),
+                                }}
+                            />
+                        ) : (
+                            <TabIcon
+                                iconName={"person"}
+                                size={22}
+                                focused={focused}
+                            />
+                        ),
                 }}
-            ></Tabs.Screen>
+            >
+                {() => <SharedStackNav screenName={nav.Me} />}
+            </Tabs.Screen>
         </Tabs.Navigator>
     );
 }

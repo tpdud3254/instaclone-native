@@ -68,7 +68,7 @@ const Likes = styled.Text`
 function Photo({ id, user, caption, file, isLiked, likes }) {
     const navigation = useNavigation();
     const { width: Swidth, height: Sheight } = useWindowDimensions(); //화면 사이즈
-    const [imageHeight, setImageHieght] = useState(Sheight - 45);
+    const [imageHeight, setImageHieght] = useState(Swidth);
     useEffect(() => {
         //파일의 실제 사이즈
         Image.getSize(file, (width, height) => {

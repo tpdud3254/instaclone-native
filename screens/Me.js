@@ -7,16 +7,9 @@ export default function Me({ navigation }) {
     useEffect(() => {
         navigation.setOptions({
             title: data?.me?.userName,
-            headerShown: true,
-            headerTintColor: "white",
-            headerStyle: {
-                borderBottomColor: "rgba(255, 255, 255, 0.3)",
-                shadowColor: "rgba(255, 255, 255, 0.3)",
-                backgroundColor: "black",
-            },
         });
     }, []);
-    // TODOS: 얘만 타이틀 안보임 ㅡㅡ
+
     return (
         <View
             style={{
