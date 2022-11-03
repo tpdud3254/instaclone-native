@@ -97,7 +97,7 @@ export default function App() {
         }
     }, [loading]);
 
-    onLayoutRootView();
+    onLayoutRootView(); //TODOS: 문제있어,,
 
     return (
         <ApolloProvider client={client}>

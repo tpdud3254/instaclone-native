@@ -71,14 +71,14 @@ export const cache = new InMemoryCache({
     },
 });
 
-const persistintCache = async () => {
-    await persistCache({
-        cache,
-        storage: new AsyncStorageWrapper(AsyncStorage),
-    }); //서버가 다운되어있어도 캐시에 있는 데이터들은 보여줌
-};
+// const persistintCache = async () => {
+//     await persistCache({
+//         cache,
+//         storage: new AsyncStorageWrapper(AsyncStorage),
+//     }); //서버가 다운되어있어도 캐시에 있는 데이터들은 보여줌
+// };
 
-persistintCache();
+// persistintCache(); //TODOS:문제있음,,
 
 const client = new ApolloClient({
     link: authLink.concat(onErrorLink).concat(uploadHttpLink),

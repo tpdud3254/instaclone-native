@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { logUserOut } from "../apollo";
 import useMe from "../hooks/useMe";
 
 export default function Me({ navigation }) {
     const { data } = useMe();
+    console.log(data);
     useEffect(() => {
         navigation.setOptions({
             title: data?.me?.userName,
@@ -19,7 +21,9 @@ export default function Me({ navigation }) {
                 justifyContent: "center",
             }}
         >
-            <Text style={{ color: "white" }}>Me</Text>
+            <TouchableOpacity onPress={logUserOut}>
+                <Text style={{ color: "white" }}>logout</Text>
+            </TouchableOpacity>
         </View>
     );
 }
