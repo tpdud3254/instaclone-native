@@ -11,3 +11,7 @@ export const darkTheme = {
     fontColor: "#FAFAFA",
     borderColor: "rgba(255, 255, 255, 0.7)",
 };
+
+export const colors = {
+    blue: "#0095f6",
+};

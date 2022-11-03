@@ -8,8 +8,7 @@ const Stack = createStackNavigator();
 export default function LoggedInNav() {
     return (
         <Stack.Navigator
-            headerMode="none"
-            screenOptions={{ presentation: "modal" }}
+            screenOptions={{ presentation: "modal", headerShown: false }}
         >
             <Stack.Screen name="Tabs" component={TabsNav} />
             <Stack.Screen name="Upload" component={UploadNav} />
