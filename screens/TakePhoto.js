@@ -12,6 +12,7 @@ import { Camera } from "expo-camera";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import * as MediaLibrary from "expo-media-library";
+import { useIsFocused } from "@react-navigation/native";
 
 const Container = styled.View`
     flex: 1;
@@ -134,28 +135,35 @@ export default function TakePhoto({ navigation }) {
             await MediaLibrary.saveToLibraryAsync(takenPhoto);
         }
 
-        console.log("Weill upload", takenPhoto);
+        navigation.navigate("UploadForm", {
+            file: takenPhoto,
+        });
     };
+
+    const isFocused = useIsFocused(); //이 화면이 보이지 않을때도 카메라가 켜져있으니 자원낭비를 막기위해 포커스 추가
 
     return (
         <Container>
-            <StatusBar hidden={true} />
-            {takenPhoto === "" ? (
-                <Camera
-                    style={{ flex: 1 }}
-                    type={cameraType}
-                    zoom={zoom}
-                    flashMode={flashMode}
-                    ref={camera}
-                    onCameraReady={onCameraReady}
-                >
-                    <CloseBtn onPress={() => navigation.navigate("Tabs")}>
-                        <Ionicons name="close" color="white" size={30} />
-                    </CloseBtn>
-                </Camera>
-            ) : (
-                <Image source={{ uri: takenPhoto }} style={{ flex: 1 }} />
-            )}
+            {isFocused ? <StatusBar hidden={true} /> : null}
+
+            {isFocused ? (
+                takenPhoto === "" ? (
+                    <Camera
+                        style={{ flex: 1 }}
+                        type={cameraType}
+                        zoom={zoom}
+                        flashMode={flashMode}
+                        ref={camera}
+                        onCameraReady={onCameraReady}
+                    >
+                        <CloseBtn onPress={() => navigation.navigate("Tabs")}>
+                            <Ionicons name="close" color="white" size={30} />
+                        </CloseBtn>
+                    </Camera>
+                ) : (
+                    <Image source={{ uri: takenPhoto }} style={{ flex: 1 }} />
+                )
+            ) : null}
             {takenPhoto === "" ? (
                 <Actions>
                     <SliderContainer>

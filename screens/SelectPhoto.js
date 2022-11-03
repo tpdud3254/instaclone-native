@@ -4,6 +4,7 @@ import * as MediaLibrary from "expo-media-library";
 import {
     FlatList,
     Image,
+    StatusBar,
     TouchableOpacity,
     useWindowDimensions,
 } from "react-native";
@@ -41,6 +42,7 @@ export default function SelectPhoto({ navigation }) {
     const [ok, setOk] = useState(false);
     const [photos, setPhotos] = useState([]);
     const [chosenPhoto, setChosenPhoto] = useState("");
+    const [photoLocal, setPhotoLocal] = useState("");
 
     const getPhotos = async () => {
         if (ok) {
@@ -70,7 +72,11 @@ export default function SelectPhoto({ navigation }) {
     };
 
     const HeaderRight = () => (
-        <TouchableOpacity>
+        <TouchableOpacity
+            onPress={() =>
+                navigation.navigate("UploadForm", { file: photoLocal })
+            }
+        >
             <HeaderRightText>Next</HeaderRightText>
         </TouchableOpacity>
     );
@@ -82,12 +88,15 @@ export default function SelectPhoto({ navigation }) {
         navigation.setOptions({
             headerRight: HeaderRight,
         });
-    }, []);
-    const choosePhoto = (uri) => {
-        setChosenPhoto(uri);
+    }, [chosenPhoto, photoLocal]);
+    const choosePhoto = async (id) => {
+        const assetInfo = await MediaLibrary.getAssetInfoAsync(id);
+        setPhotoLocal(assetInfo.localUri);
+        setChosenPhoto(assetInfo.uri);
     };
+
     const renderItem = ({ item: photo }) => (
-        <ImageContainer onPress={() => choosePhoto(photo.uri)}>
+        <ImageContainer onPress={() => choosePhoto(photo.id)}>
             <Image
                 source={{ uri: photo.uri }}
                 style={{
@@ -106,6 +115,7 @@ export default function SelectPhoto({ navigation }) {
     );
     return (
         <Container>
+            <StatusBar hidden={false} />
             <Top>
                 {chosenPhoto !== "" ? (
                     <Image
