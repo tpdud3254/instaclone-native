@@ -128,6 +128,7 @@ export default function SelectPhoto({ navigation }) {
 //TODOS: 앨범 선택 가능하게
 //TODOS: 앨범 무한 스크롤링
 //TODOS: 사진 이상하게 가지고옴
+//TODOS: 권한 거부시 텍스트 라던지 권한 요청 버튼 추가
 
 /* 안드로이드의 permission object는 {
     "canAskAgain": true,
