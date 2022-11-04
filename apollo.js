@@ -3,13 +3,21 @@ import {
     createHttpLink,
     InMemoryCache,
     makeVar,
+    split,
 } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setContext } from "@apollo/client/link/context";
-import { offsetLimitPagination } from "@apollo/client/utilities";
+import {
+    getMainDefinition,
+    offsetLimitPagination,
+} from "@apollo/client/utilities";
 import { persistCache, AsyncStorageWrapper } from "apollo3-cache-persist";
 import { onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { SubscriptionClient } from "subscriptions-transport-ws";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 export const isLoggedInVar = makeVar(false);
 export const tokenVar = makeVar("");
@@ -61,12 +69,49 @@ const onErrorLink = onError((graphQLErrors, networkError) => {
         console.log("network Error", networkError);
     }
 });
+
+// const wsLink = new GraphQLWsLink(
+//     new SubscriptionClient("ws://8b92-211-59-182-118.jp.ngrok.io/graphql", {
+//         connectionParams: { token: tokenVar() },
+//     })
+// );
+const wsLink = new GraphQLWsLink(
+    createClient({
+        url: "wss://8b92-211-59-182-118.jp.ngrok.io/graphql",
+        connectionParams: () => ({
+            token: tokenVar(),
+        }),
+    })
+);
+
+//웹소켓링크를 만들때 token값이 비어있기때문에 함수형태로 반환? //TODOS: 먼소린지는 몰겟찌만,,
+const httpLinks = authLink.concat(onErrorLink).concat(uploadHttpLink);
+
+const splitLink = split(
+    ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+        );
+    },
+    wsLink,
+    httpLinks
+);
+
 export const cache = new InMemoryCache({
     typePolicies: {
         Query: {
             fields: {
                 seeFeed: offsetLimitPagination(),
             },
+        },
+        Message: {
+            fields: {
+                user: {
+                    merge: true,
+                },
+            }, //InMemoryCache 오류 나시는 분들은 InMemoryCache를 수정해주셔야 하는데 해당 오브젝트의 필드를 merge: true만 해주시면 됩니다.
         },
     },
 });
@@ -81,7 +126,7 @@ export const cache = new InMemoryCache({
 // persistintCache(); //TODOS:문제있음,,
 
 const client = new ApolloClient({
-    link: authLink.concat(onErrorLink).concat(uploadHttpLink),
+    link: splitLink,
     cache,
 });
 

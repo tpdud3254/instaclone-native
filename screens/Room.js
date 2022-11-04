@@ -1,5 +1,11 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useEffect } from "react";
+import {
+    gql,
+    useApolloClient,
+    useMutation,
+    useQuery,
+    useSubscription,
+} from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     FlatList,
@@ -12,6 +18,20 @@ import styled from "styled-components/native";
 import ScreenLayout from "../components/ScreenLayout";
 import useMe from "../hooks/useMe";
 import { Ionicons } from "@expo/vector-icons";
+
+const ROOM_UPDATES = gql`
+    subscription roomUpdates($id: Int!) {
+        roomUpdates(id: $id) {
+            id
+            payload
+            user {
+                userName
+                avatar
+            }
+            read
+        }
+    }
+`;
 
 const SEND_MESSAGE_MUTATION = gql`
     mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -93,6 +113,7 @@ const SendButton = styled.TouchableOpacity``;
 export default function Room({ route, navigation }) {
     const { data: meData } = useMe();
     const { register, handleSubmit, setValue, getValues, watch } = useForm();
+    const [subscribed, setSubscribed] = useState(false);
 
     const updateSendMessage = (cache, result) => {
         const {
@@ -133,9 +154,20 @@ export default function Room({ route, navigation }) {
             cache.modify({
                 id: `Room:${route.params.id}`,
                 fields: {
-                    messages: (prev) => [...prev, messageFragment],
+                    messages: (prev) => {
+                        const existingMessage = prev.find(
+                            (aMessage) =>
+                                aMessage.__ref === messageFragment.__ref
+                        );
+
+                        if (existingMessage) {
+                            return prev;
+                        }
+
+                        return [...prev, messageFragment];
+                    },
                 },
-            }); //TODOS: 이해가 잘 안감,,
+            });
         }
     };
 
@@ -145,11 +177,67 @@ export default function Room({ route, navigation }) {
             update: updateSendMessage,
         }
     );
-    const { data, loading } = useQuery(ROOM_QUERY, {
+    const { data, loading, subscribeToMore } = useQuery(ROOM_QUERY, {
         variables: {
             id: route?.params?.id,
         },
     });
+    const client = useApolloClient();
+    const updateQuery = (prevQuery, options) => {
+        console.log(options);
+        const {
+            subscriptionData: {
+                data: { roomUpdates: message },
+            },
+        } = options;
+
+        if (message.id) {
+            const incomingMessage = client.cache.writeFragment({
+                fragment: gql`
+                    fragment NewMessage on Message {
+                        id
+                        payload
+                        user {
+                            userName
+                            avatar
+                        }
+                        read
+                    }
+                `,
+                data: message,
+            });
+            client.cache.modify({
+                id: `Room:${route.params.id}`,
+                fields: {
+                    messages(prev) {
+                        const existingMessage = prev.find(
+                            (aMessage) =>
+                                aMessage.__ref === incomingMessage.__ref
+                        );
+
+                        if (existingMessage) {
+                            return prev;
+                        }
+                        return [...prev, incomingMessage];
+                    },
+                },
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (data?.seeRoom && !subscribed) {
+            subscribeToMore({
+                document: ROOM_UPDATES,
+                variables: {
+                    id: route?.params?.id,
+                },
+                updateQuery: updateQuery,
+            });
+            setSubscribed(true);
+        }
+    }, [data, subscribed]);
+
     useEffect(() => {
         register("message", {
             required: true,
@@ -241,3 +329,4 @@ export default function Room({ route, navigation }) {
 }
 
 //TODOS: read message 등 구현
+//redis < 진짜 채팅으로 할려면 이거로 사용해야됨, 우린 그냥 데모버전으로 사용하는거고 실제 프로덕트에는 노노
